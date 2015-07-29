@@ -7,6 +7,9 @@ function world = initWorld(k, c, m, sigma, f, initPos, desPos, Q,R,timeDiscount,
 % desPos is the desired position.
 % model is x' = A1x + B1u + noise, 
 % x(k+1) = (dtA1+I)x(k) + dtB1u(k) + noise = Ax(k)+Bu(k)+noise 
+% maxIteration indicates the max time step in one trail.
+% maxTrail indicate the max number of trails that are used for estimating
+% dJdTheta for a certain policy.
 %%
     world = struct();
     world.k = k;
@@ -27,4 +30,5 @@ function world = initWorld(k, c, m, sigma, f, initPos, desPos, Q,R,timeDiscount,
     world.R = R;
     world.timeDiscount = timeDiscount;
     world.maxIteration = maxIteration;
+    world.maxTrail = maxTrail;
 end
