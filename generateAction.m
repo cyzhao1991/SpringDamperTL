@@ -5,5 +5,5 @@ function action = generateAction(policy, state)
 % Reference: Jan Peters
 
 %%
-    action = mvnrnd(policy.theta.k*[state;1]',policy.theta.sigma)';
+    action = mvnrnd(policy.theta.k*[state;1],policy.theta.sigma)';
 end

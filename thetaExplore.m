@@ -1,8 +1,10 @@
-function dJdTheta = thetaExplore(world, policy)
+function [dJdTheta, trailReward] = thetaExplore(world, policy)
 %% Written by Chenyang Zhao
 
 %%
-dJdTheta = zeros(1,world.maxTrail);
+dJdTheta = zeros(world.maxTrail,4);
+trailGrad = zeros(world.maxTrail,4);
+trailReward = zeros(world.maxTrail,1);
 for i = 1:world.maxTrail
     accReward = 0;
     accGrad = 0;
@@ -14,8 +16,12 @@ for i = 1:world.maxTrail
         accReward = accReward + accDiscount*state_Reward;
         accDiscount = accDiscount*world.timeDiscount;
         accGrad = accGrad + dLogdTheta(policy,state,action);
+        
+        state = transferModel(world,state,action);
     end
-    dJdTheta(i) = accGrad*accReward;
+    trailGrad(i,:) = accGrad;
+    trailReward(i,:) = accReward;
 end
-
+dJdTheta = bsxfun(@times,trailGrad,(trailReward - mean(trailReward)));
+dJdTheta(:,4) = 0;
 end
