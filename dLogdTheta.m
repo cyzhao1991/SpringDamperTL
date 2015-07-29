@@ -1,5 +1,6 @@
 function a = dLogdTheta(policy,state,action)
 %% Written by Chenyang Zhao
+
     
 state = [state;1];
 dLogdK = (action - policy.theta.k*state)*state'/(policy.theta.sigma^2);
