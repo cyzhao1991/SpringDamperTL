@@ -20,10 +20,10 @@ function world = initWorld(k, c, m, sigma, f, initPos, desPos, Q,R,timeDiscount,
     world.dt = 1/f;
     world.initPos = initPos;
     world.desPos = desPos;
-    world.A1 = [-c/m -k/m;
-        1 0];
-    world.B1 = [1/m;
-        0];
+    world.A1 = [0 1;
+        -k/m -c/m];
+    world.B1 = [0;
+        1/m];
     world.A = world.dt*world.A1+eye(2);
     world.B = world.dt*world.B1;
     world.Q = Q;
