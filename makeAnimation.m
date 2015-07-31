@@ -6,6 +6,7 @@ policy.theta.sigma = 0
 state = [world.initPos;0];
 animation = plot(state(1),3,'Marker','o','MarkerFaceColor' ,'b');
 axis([-2 5 1 5]);
+grid on;
 hisState = zeros(world.maxIteration,2);
 accDis = 1;
 accReward = 0;
