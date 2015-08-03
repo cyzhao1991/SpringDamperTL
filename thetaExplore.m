@@ -5,7 +5,8 @@ function [dJdTheta, trailReward] = thetaExplore(world, policy)
 dJdTheta = zeros(world.maxTrail,4);
 trailGrad = zeros(world.maxTrail,4);
 trailReward = zeros(world.maxTrail,1);
-for i = 1:world.maxTrail
+trailGradSquare = zeros(world.maxTrail,4);
+parfor i = 1:world.maxTrail
     accReward = 0;
     accGrad = 0;
     accDiscount = 1;
@@ -20,8 +21,11 @@ for i = 1:world.maxTrail
         state = transferModel(world,state,action);
     end
     trailGrad(i,:) = accGrad;
+    trailGradSquare(i,:) = accGrad.^2;
     trailReward(i,:) = accReward;
 end
-dJdTheta = bsxfun(@times,trailGrad,(trailReward - mean(trailReward)));
+baseline = mean(bsxfun(@times,trailGradSquare,trailReward))./mean(trailGradSquare);
+dJdTheta = bsxfun(@times,trailGrad,(bsxfun(@minus,repmat(trailReward,1,4), baseline)));
 dJdTheta(:,4) = 0;
+dJdTheta = mean(dJdTheta);
 end

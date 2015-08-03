@@ -5,6 +5,6 @@ function r = stateReward(world, state)
 %% 
     pos_error = state(1) - world.desPos;
     vel_error = state(2) - 0;
-    r =  5 - pos_error'*world.Q*pos_error - vel_error'*world.R*vel_error;
+    r =  100 - pos_error'*world.Q*pos_error - vel_error'*world.R*vel_error;
     r = max(r,0);
 end

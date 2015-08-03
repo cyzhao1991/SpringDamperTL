@@ -10,6 +10,7 @@ grid on;
 hisState = zeros(world.maxIteration,2);
 accDis = 1;
 accReward = 0;
+policy.theta.sigma = 0.00001;
 for i = 1:world.maxIteration
     action = generateAction(policy,state);
     state = transferModel(world,state,action);
