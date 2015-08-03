@@ -16,6 +16,7 @@ parfor i = 1:world.maxTrail
         action = generateAction(policy,state);
         accReward = accReward + accDiscount*state_Reward;
         accDiscount = accDiscount*world.timeDiscount;
+        dLogdTheta(policy,state,action);
         accGrad = accGrad + dLogdTheta(policy,state,action);
         
         state = transferModel(world,state,action);
@@ -24,8 +25,10 @@ parfor i = 1:world.maxTrail
     trailGradSquare(i,:) = accGrad.^2;
     trailReward(i,:) = accReward;
 end
+trailGrad;
 baseline = mean(bsxfun(@times,trailGradSquare,trailReward))./mean(trailGradSquare);
 dJdTheta = bsxfun(@times,trailGrad,(bsxfun(@minus,repmat(trailReward,1,4), baseline)));
 dJdTheta(:,4) = 0;
+
 dJdTheta = mean(dJdTheta);
 end

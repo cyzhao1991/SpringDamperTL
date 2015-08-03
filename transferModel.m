@@ -6,5 +6,6 @@ function newState = transferModel(world, state, action)
 % action, the current action of the robot 
 % x(k+1) = Ax(k)+Bu(k)+noise;
 %%
-    newState = world.A*state + world.B*action + mvnrnd([0 0], world.sigma)';
+    newState = world.A*state + world.B*action + mvnrnd([0 0], world.sigma.^2)';
+    newState = bsxfun(@max,[-10;-100],bsxfun(@min,newState,[10;100]));
 end
