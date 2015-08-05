@@ -13,20 +13,20 @@ if ~exist('desPos','var')
     desPos = 4;
 end
 
-Q = eye(1);
-R = 0.01*eye(1);
+Q = diag([1,0.05]);
+R = 0*eye(1);
 timeDiscount = 0.999;
 maxIteration = 300;
 maxTrail = 100;
 
 world = initWorld(k,d,m,sigma,f,initPos,desPos,Q,R,timeDiscount,maxIteration,maxTrail);
 
-policyK = rand(1,3)*10-5;
+policyK = rand(1,3)*0;
 policySigma = 0.3;
 policy = initGaussianPolicy(policyK,policySigma);
 
-maxStep = 100;
-learningRate = 0.02*0.05;
+maxStep = 1000;
+learningRate = 0.05*0.05;
 hisReward = [];
 hisPolicy = [policy.theta.k,policy.theta.sigma];
 hisPolicy2 = [];

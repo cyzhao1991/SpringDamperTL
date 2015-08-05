@@ -12,8 +12,8 @@ parfor i = 1:world.maxTrail
     accDiscount = 1;
     state = [world.initPos;0];
     for k = 1:world.maxIteration
-        state_Reward = stateReward(world,state);
         action = generateAction(policy,state);
+        state_Reward = stateReward(world,state,action);
         accReward = accReward + accDiscount*state_Reward;
         accDiscount = accDiscount*world.timeDiscount;
         dLogdTheta(policy,state,action);

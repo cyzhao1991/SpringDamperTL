@@ -1,5 +1,5 @@
 function [animation, hisState] = makeAnimation(world,policy)
-close all;
+%close all;
 figure(1);
 %b = plot(world.desPos, 3 , 'Marker', 'o', 'MarkerFaceColor', 'r');
 policy.theta.sigma = 0
@@ -11,13 +11,14 @@ hisState = zeros(world.maxIteration,2);
 accDis = 1;
 accReward = 0;
 policy.theta.sigma = 0.00001;
+stateRewards = [];
 for i = 1:world.maxIteration
     action = generateAction(policy,state);
     state = transferModel(world,state,action);
     set(animation,'XData',state(1));
     pause(0.01);
-    stateReward(world,state)
-    accReward = accReward + accDis*stateReward(world,state);
+    stateRewards = [stateRewards stateReward(world,state,action)];
+    accReward = accReward + accDis*stateReward(world,state,action);
     accDis = accDis*world.timeDiscount;
     if norm(state - [world.desPos;0]) < 0.01;
         break
@@ -25,3 +26,5 @@ for i = 1:world.maxIteration
     hisState(i,:) = state';
 end
 accReward
+figure(2)
+plot(stateRewards)
