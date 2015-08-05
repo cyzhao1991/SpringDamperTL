@@ -3,7 +3,7 @@ function r = stateReward(world, state, action)
 % get the state reward of current state
 % State Reward is defined as 
 %% 
-    state_error = state - [world.desPos; 0];
+    state_error = state(1:2) - [world.desPos; 0];
     %vel_error = state(2) - 0;
     r = - state_error'*world.Q*state_error - action'*world.R*action;
 %     if abs(pos_error)>0.1

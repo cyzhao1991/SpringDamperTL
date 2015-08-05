@@ -5,7 +5,7 @@
 k = 1;      %N/m
 d = 0.01;   %N*s/m
 m = 0.5;    %kg
-sigma = [0.00001, 0.000001];
+sigma = [0.001 0.001];
 f = 100;    %Hz
 initPos = 0;
 
@@ -18,15 +18,19 @@ R = 0*eye(1);
 timeDiscount = 0.999;
 maxIteration = 300;
 maxTrail = 100;
+statevec = 'x,v,desPos';
 
-world = initWorld(k,d,m,sigma,f,initPos,desPos,Q,R,timeDiscount,maxIteration,maxTrail);
+world = initWorld(k,d,m,sigma,f,initPos,desPos,Q,R,timeDiscount,maxIteration,maxTrail,statevec);
 
-policyK = rand(1,3)*0;
+
+%policyK = rand(1,3)*0;
+stateLength = length(strsplit(statevec,','));
+policyK = -1*ones(1,stateLength+1);
 policySigma = 0.3;
 policy = initGaussianPolicy(policyK,policySigma);
 
 maxStep = 1000;
-learningRate = 0.05*0.05;
+learningRate = 0.001;
 hisReward = [];
 hisPolicy = [policy.theta.k,policy.theta.sigma];
 hisPolicy2 = [];
@@ -43,11 +47,10 @@ for i = 1:maxStep
     [dJdTheta, trailRewards] = thetaExplore(world, policy);
     updateGrad = dJdTheta;
     policy.backup = policy.theta;
-    policy.theta.k = policy.theta.k + learningRate*updateGrad(1:3);
+    policy.theta.k = policy.theta.k + learningRate*updateGrad(1:end-1);
     policy.theta.sigma = policy.theta.sigma + learningRate*updateGrad(end);
     policy.theta.sigma = max(policy.theta.sigma,0.01);
     
-    trailRewards;
     hisReward =[hisReward mean(trailRewards)];
     hisReward(end)
     hisPolicy = [hisPolicy; [policy.theta.k,policy.theta.sigma]];

@@ -3,11 +3,11 @@ function [animation, hisState] = makeAnimation(world,policy)
 figure(1);
 %b = plot(world.desPos, 3 , 'Marker', 'o', 'MarkerFaceColor', 'r');
 policy.theta.sigma = 0
-state = [world.initPos;0];
+state = world.initState;
 animation = plot(state(1),3,'Marker','o','MarkerFaceColor' ,'b');
 axis([-2 5 1 5]);
 grid on;
-hisState = zeros(world.maxIteration,2);
+hisState = zeros(world.maxIteration,world.stateLength);
 accDis = 1;
 accReward = 0;
 policy.theta.sigma = 0.00001;
@@ -20,9 +20,7 @@ for i = 1:world.maxIteration
     stateRewards = [stateRewards stateReward(world,state,action)];
     accReward = accReward + accDis*stateReward(world,state,action);
     accDis = accDis*world.timeDiscount;
-    if norm(state - [world.desPos;0]) < 0.01;
-        break
-    end
+
     hisState(i,:) = state';
 end
 accReward

@@ -1,4 +1,4 @@
-clearvars -except poolobj;
+clearvars -except 'poolobj';
 close all;
 clc;
 
@@ -16,6 +16,7 @@ for desPos = 1:5;
     result(desPos).hisReward = hisReward;
     result(desPos).hisPolicy = hisPolicy;
     result(desPos).hisPolicy2 = hisPolicy2;
+    result(desPos).world = world;
 end
 
 profile off;
