@@ -1,4 +1,4 @@
-function world = initWorld(k, c, m, sigma, f, initPos, desPos, Q,R,timeDiscount, maxIteration, maxTrail,statevec)
+function world = initWorld(k, d, m, sigma, f, initPos, desPos, Q,R,timeDiscount, maxIteration, maxTrail,statevec)
 % world = initWorld creates a world struct containing all the setting
 % parameters.
 % k is the spring constant, c is the damper constant, f is the update frequency.
@@ -13,7 +13,7 @@ function world = initWorld(k, c, m, sigma, f, initPos, desPos, Q,R,timeDiscount,
 %%
     world = struct();
     world.k = k;
-    world.c = c;
+    world.d = d;
     world.m = m;
     world.sigma = sigma;
     world.f = f;
@@ -21,7 +21,7 @@ function world = initWorld(k, c, m, sigma, f, initPos, desPos, Q,R,timeDiscount,
     world.initPos = initPos;
     world.desPos = desPos;
     world.A1 = [0 1;
-        -k/m -c/m];
+        -k/m -d/m];
     world.B1 = [0;
         1/m];
     world.A = world.dt*world.A1+eye(2);

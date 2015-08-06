@@ -1,33 +1,45 @@
 %% main funtion for single task SDM system
 
 %% Initializaiton
+if ~exist('k','var')
+    k = 1;      %N/m
+end
 
-k = 1;      %N/m
-d = 0.01;   %N*s/m
-m = 0.5;    %kg
-sigma = [0.001 0.001];
-f = 100;    %Hz
-initPos = 0;
+if ~exist('d','var')
+    d = 0.01;   %N*s/m
+end
+
+if ~exist('m','var')
+    m = 0.5;    %kg
+end
 
 if ~exist('desPos','var')
     desPos = 4;
 end
 
+sigma = [0.001 0.001];
+f = 100;    %Hz
+initPos = 0;
 Q = diag([1,0.05]);
 R = 0*eye(1);
 timeDiscount = 0.999;
 maxIteration = 300;
 maxTrail = 100;
-statevec = 'x,v,desPos';
+
+if ~exist('statevec','var')
+    statevec = 'x,v,desPos';
+end
 
 world = initWorld(k,d,m,sigma,f,initPos,desPos,Q,R,timeDiscount,maxIteration,maxTrail,statevec);
 
 
 %policyK = rand(1,3)*0;
-stateLength = length(strsplit(statevec,','));
-policyK = -1*ones(1,stateLength+1);
-policySigma = 0.3;
-policy = initGaussianPolicy(policyK,policySigma);
+if ~exist('policy','var')
+    stateLength = length(strsplit(statevec,','));
+    policyK = -1*ones(1,stateLength+1);
+    policySigma = 0.3;
+    policy = initGaussianPolicy(policyK,policySigma);
+end
 
 maxStep = 1000;
 learningRate = 0.001;
