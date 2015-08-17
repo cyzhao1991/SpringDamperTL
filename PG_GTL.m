@@ -8,7 +8,7 @@ close all;
 dlist = [0.01,0.05,0.1,0.2,0.5];
 klist = [1 2 3 4 5];
 desPoslist = [1 2 3 4 5];
-statevec = 'x,v,desPos';
+statevec = 'x,v,k';
 
 m = 0.5;
 sigma = [0.001 0.001];
@@ -35,7 +35,7 @@ maxStep = 1000;
 learningRate = 0.001;
 hisReward = [];
 iteraionReward = zeros(1,5);
-hisPolicy = [policy.theta.k,policy.theta.sigma];
+hisPolicy = repmat([policy.theta.k,policy.theta.sigma],5,1);
 hisPolicy2 = [];
 hisPolicy2(1).policy = policy;
 
@@ -58,11 +58,13 @@ for i = 1:maxStep
         iterationReward(j) = mean(trailRewards);
         hisPolicy = [hisPolicy; [policy.theta.k,policy.theta.sigma]];
         hisPolicy2(i+1).policy = policy;
-        if norm(policy.theta.k-policy.backup.k) < 0.01
-            break
-        end
     end
     hisReward = [hisReward; iterationReward];
     hisReward(end,:)
     i
+    
+    if norm(hisPolicy(end-4:end,:)-hisPolicy(end-9:end-5,:)) < 0.01
+        break
+    end
+    
 end
