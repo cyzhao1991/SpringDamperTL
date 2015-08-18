@@ -17,7 +17,7 @@ profile on;
 dlist = [0.01,0.05,0.1,0.2,0.5];
 klist = [1 2 3 4 5];
 desPoslist = [1 2 3 4 5];
-statevec = 'x,v,k';
+statevec = 'x,v,k,d,desPos';
 k = 3;
 T = length(klist);
 
@@ -44,13 +44,16 @@ initPolicy = initGaussianPolicy(policyK,policySigma);
 %% STL for each task
 for t = 1:T
     policy{t} = singleTask(worldlist(t),initPolicy);
+    makeAnimation(worldlist(t),vec2policy(policy{t}'));
+    t
 end
 
 policy
 W = cell2mat(policy);
 [U,~,~] = svd(W);
 L = U(:,1:k);
-S = zeros(k,T);
+
+S = ones(k,T);
 S(1,:) = 1;
 
 %%
@@ -62,9 +65,9 @@ for i = 1:maxStep
         for j = 1:300
             curPolicy = vec2policy((L*S(:,t))');
             [dJdTheta, trailRewards] = thetaExplore(worldlist(t), curPolicy);
-            dJdS = (dJdTheta*L)';
+            dJdS = (dJdTheta*L)' - 0.1*2*S(:,t);
             sOld = S(:,t);
-            S(:,t) = S(:,t)+learningrate*dJdS;
+            S(:,t) = S(:,t)+learningrate*dJdS
             if norm(sOld - S(:,t))<0.01
                 break;
             end
@@ -80,9 +83,9 @@ for i = 1:maxStep
             [dJdTheta, trailRewards] = thetaExplore(worldlist(t), curPolicy);
             dJdL = dJdL + (S(:,t)*dJdTheta)';
         end
-        dJdL = dJdL/T;
+        dJdL = dJdL/T - 0.1*2*L;
         lOld = L;
-        L = L+learningrate*dJdL;
+        L = L+learningrate*dJdL
         if norm(lOld-L)<0.01
             break;
         end

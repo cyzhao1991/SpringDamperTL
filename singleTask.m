@@ -11,7 +11,7 @@ for i = 1:maxStep
     policy.theta.k = policy.theta.k + learningRate*updateGrad(1:end-1);
     policy.theta.sigma = policy.theta.sigma + learningRate*updateGrad(end);
     policy.theta.sigma = max(policy.theta.sigma,0.01);
-    if norm(policy.theta.k-policy.backup.k) < 0.01
+    if norm(policy.theta.k-policy.backup.k) < 0.1
         break
     end
 end
