@@ -8,5 +8,5 @@ function newState = transferModel(world, state, action)
 %%
     newState = state;
     newState(1:2) = world.A*state(1:2) + world.B*action + mvnrnd([0 0], world.sigma.^2)';
-    newState(1:2) = bsxfun(@max,[-10;-100],bsxfun(@min,newState(1:2),[10;100]));
+    newState(1:2) = bsxfun(@max,[-20;-100],bsxfun(@min,newState(1:2),[20;100]));
 end

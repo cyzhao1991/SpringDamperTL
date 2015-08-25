@@ -16,10 +16,10 @@ profile on;
 
 dlist = [0.01,0.05,0.1,0.2,0.5];
 klist = [1 2 3 4 5];
-desPoslist = [1 2 3 4 5];
+desPoslist = [1 2 3 4 5 -1 -2 -3 -4 -5];
 statevec = 'x,v,k,d,desPos';
-k = 3;
-T = length(klist);
+k = 6;
+T = length(desPoslist);
 
 m = 0.5;
 sigma = [0.001 0.001];
@@ -31,7 +31,7 @@ timeDiscount = 0.999;
 maxIteration = 300;
 maxTrail = 100;
 learningrate = 0.001;
-for i = 1:5
+for i = 1:T
     worldlist(i) = initWorld(klist(1),dlist(1), m, sigma, f, initPos, desPoslist(i), Q, R,...
         timeDiscount, maxIteration, maxTrail,statevec);
 end
@@ -58,9 +58,9 @@ S(1,:) = 1;
 
 %%
 maxStep = 100;
-
+SL = [reshape(S,[],1);reshape(L,[],1)];
 for i = 1:maxStep
-    
+    SLOld = SL;
     for t = 1:T
         for j = 1:300
             curPolicy = vec2policy((L*S(:,t))');
@@ -90,9 +90,12 @@ for i = 1:maxStep
             break;
         end
     end
-    
     i
+    SL = [reshape(S,[],1);reshape(L,[],1)];
     
+    if norm(SL-SLOld)<0.01
+        break;
+    end
 end
 
 
