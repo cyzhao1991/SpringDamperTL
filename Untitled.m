@@ -16,12 +16,12 @@ profile on;
 
 dlist = [0.01,0.05,0.1,0.2,0.5];
 klist = [1 2 3 4 5];
-desPoslist = [1 2 3 4 5 -1 -2 -3 -4 -5];
-statevec = 'x,v,k,d,desPos';
-k = 6;
+mlist = [0.1 0.5 1 2 5];
+desPoslist = [1 2 3 4 5];
+statevec = 'x,v,k';
+k = 3;
 T = length(desPoslist);
 
-m = 0.5;
 sigma = [0.001 0.001];
 f = 100;    %Hz
 initPos = 0;
@@ -32,7 +32,7 @@ maxIteration = 300;
 maxTrail = 100;
 learningrate = 0.001;
 for i = 1:T
-    worldlist(i) = initWorld(klist(1),dlist(1), m, sigma, f, initPos, desPoslist(i), Q, R,...
+    worldlist(i) = initWorld(klist(i),dlist(1), mlist(2), sigma, f, initPos, desPoslist(4), Q, R,...
         timeDiscount, maxIteration, maxTrail,statevec);
 end
 
