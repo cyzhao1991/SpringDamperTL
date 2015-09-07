@@ -54,25 +54,43 @@ hisPolicy2(1).policy = policy;
 %%
 
 %profile on;
+if world.ifsigma == 1
+    for i = 1:maxStep
+        [dJdTheta, trailRewards] = thetaExplore(world, policy);
+        updateGrad = dJdTheta;
+        policy.backup = policy.theta;
+        policy.theta.k = policy.theta.k + learningRate*updateGrad(1:end-1);
+        policy.theta.sigma = policy.theta.sigma + learningRate*updateGrad(end);
+        policy.theta.sigma = max(policy.theta.sigma,0.01);
 
-for i = 1:maxStep
-    [dJdTheta, trailRewards] = thetaExplore(world, policy);
-    updateGrad = dJdTheta;
-    policy.backup = policy.theta;
-    policy.theta.k = policy.theta.k + learningRate*updateGrad(1:end-1);
-    policy.theta.sigma = policy.theta.sigma + learningRate*updateGrad(end);
-    policy.theta.sigma = max(policy.theta.sigma,0.01);
-    
-    hisReward =[hisReward mean(trailRewards)];
-    hisReward(end)
-    hisPolicy = [hisPolicy; [policy.theta.k,policy.theta.sigma]];
-    hisPolicy2(i+1).policy = policy;
-    if norm(policy.theta.k-policy.backup.k) < 0.01
-        break
+        hisReward =[hisReward mean(trailRewards)];
+        hisReward(end)
+        hisPolicy = [hisPolicy; [policy.theta.k,policy.theta.sigma]];
+        hisPolicy2(i+1).policy = policy;
+        if norm(policy.theta.k-policy.backup.k) < 0.01
+            break
+        end
+        i
     end
-    i
-end
+else 
+    policy.theta.sigma = 0.01;
+    for i = 1:maxStep
+        [dJdTheta, trailRewards] = thetaExplore(world, policy);
+        updateGrad = dJdTheta
+        policy.backup = policy.theta;
+        policy.theta.k = policy.theta.k + learningRate*updateGrad;
 
+
+        hisReward =[hisReward mean(trailRewards)];
+        hisReward(end)
+        hisPolicy = [hisPolicy; [policy.theta.k,policy.theta.sigma]];
+        hisPolicy2(i+1).policy = policy;
+        if norm(policy.theta.k-policy.backup.k) < 0.01
+            break
+        end
+        i
+    end
+end
 % delete(poolobj);
 
 %profile off

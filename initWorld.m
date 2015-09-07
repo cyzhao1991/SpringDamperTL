@@ -41,5 +41,6 @@ function world = initWorld(k, d, m, sigma, f, initPos, desPos, Q,R,timeDiscount,
     for i = 3:length(c)
         world.initState(i) = getfield(world,c{i});
     end
+    world.ifsigma = 1;
     
 end
