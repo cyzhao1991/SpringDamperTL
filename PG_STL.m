@@ -8,13 +8,13 @@ clc;
 %    poolobj = parpool;
 %end
 profile on;
-statevec = 'x,v,m';
+statevec = 'x,v';
 klist = [1 2 3 4 5];
 dlist = [0.01,0.05,0.1,0.2,0.5];
 mlist = [0.5, 1, 2, 3, 5];
 desPoslist = [1 2 3 4 5];
 for taskNum = 1:5;
-    m = mlist(taskNum);
+    desPos = desPoslist(taskNum);
     PGTest;
     result(taskNum).desPos = desPos;
     result(taskNum).policy = policy;

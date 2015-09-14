@@ -2,41 +2,41 @@
 
 % PG_MTL
 
-clearvars -except 'poolobj' 
-load ('STL_k.mat','result');
-clc;
-close all;
-
-
-
-% Initialization
-
-if ~exist('poolobj','var')
-    poolobj = parpool;
-end
-profile on;
-%%
-dlist = [0.01,0.05,0.1,0.2,0.5];
-klist = [1 2 3 4 5];
-mlist = [0.5 1 2 3 5];
-desPoslist = [1 2 3 4 5];
-statevec = 'x,v';
-k = 3;
-T = length(desPoslist);
-
-sigma = [0.001 0.001];
-f = 100;    %Hz
-initPos = 0;
-Q = diag([1,0.05]);
-R = 0*eye(1);
-timeDiscount = 0.999;
-maxIteration = 300;
-maxTrail = 100;
-learningrate = 0.001;
-for i = 1:T
-    worldlist(i) = initWorld(klist(i),dlist(1), mlist(1), sigma, f, initPos, desPoslist(4), Q, R,...
-        timeDiscount, maxIteration, maxTrail,statevec);
-end
+% clearvars -except 'poolobj' 
+% load ('STL_k.mat','result');
+% clc;
+% close all;
+% 
+% 
+% 
+% % Initialization
+% 
+% if ~exist('poolobj','var')
+%     poolobj = parpool;
+% end
+% profile on;
+% %%
+% dlist = [0.01,0.05,0.1,0.2,0.5];
+% klist = [1 2 3 4 5];
+% mlist = [0.5 1 2 3 5];
+% desPoslist = [1 2 3 4 5];
+% statevec = 'x,v';
+% k = 3;
+% T = length(desPoslist);
+% 
+% sigma = [0.001 0.001];
+% f = 100;    %Hz
+% initPos = 0;
+% Q = diag([1,0.05]);
+% R = 0*eye(1);
+% timeDiscount = 0.999;
+% maxIteration = 300;
+% maxTrail = 100;
+% learningrate = 0.001;
+% for i = 1:T
+%     worldlist(i) = initWorld(klist(i),dlist(1), mlist(1), sigma, f, initPos, desPoslist(4), Q, R,...
+%         timeDiscount, maxIteration, maxTrail,statevec);
+% end
 
 stateLength = length(strsplit(statevec,','));
 policyK = -1*ones(1,stateLength+1);
@@ -59,7 +59,8 @@ S = sqrt(a)*b';
 S = S(1:k,:);
 Z = zeros(2,T);
 Z(1,:) = 1;
-Z(2,:) = desPoslist;
+Z(2,:) = somelist;
+S = S*pinv(Z);
 %S = zeros(k,T);
 %S(1,:) = 1;
 %%
@@ -69,14 +70,16 @@ for i = 1:maxStep
     SLOld = SL;
     for t = 1:T
         for j = 1:100
-            curPolicy = vec2policy((L*S(:,t))');
+            curPolicy = vec2policy((L*S*Z(:,t))');
             [dJdTheta, trailRewards] = thetaExplore(worldlist(t), curPolicy);
-            dJdS = (dJdTheta*L)' - 0.1*2*S(:,t);
-            sOld = S(:,t);
-            S(:,t) = S(:,t)+learningrate*dJdS
-            if norm(sOld - S(:,t))<0.01
+            dJdS = (Z(:,t)*dJdTheta*L)' - 0.1*2*S;
+            sOld = S;
+            S = S+learningrate*dJdS
+            if norm(sOld - S)<0.01
                 break;
             end
+            [~,~,tempreward] = makeAnimation(worldlist(t),curPolicy,false);
+            tempreward
         end
     end
     
@@ -85,10 +88,9 @@ for i = 1:maxStep
     for j = 1:100
         dJdL = zeros(size(L));
         for t = 1:T
-            L*S(:,t);
-            curPolicy = vec2policy((L*S(:,t))');
+            curPolicy = vec2policy((L*S*Z(:,t))');
             [dJdTheta, trailRewards] = thetaExplore(worldlist(t), curPolicy);
-            dJdL = dJdL + (S(:,t)*dJdTheta)';
+            dJdL = dJdL + (S*Z(:,t)*dJdTheta)';
         end
         dJdL = dJdL/T - 0.1*2*L;
         lOld = L;
@@ -96,6 +98,8 @@ for i = 1:maxStep
         if norm(lOld-L)<0.01
             break;
         end
+        [~,~,tempreward] = makeAnimation(worldlist(t),curPolicy,false);
+        tempreward
     end
     i
     SL = [reshape(S,[],1);reshape(L,[],1)];

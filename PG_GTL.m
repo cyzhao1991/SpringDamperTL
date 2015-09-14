@@ -8,9 +8,9 @@ close all;
 dlist = [0.01,0.05,0.1,0.2,0.5];
 klist = [1 2 3 4 5];
 desPoslist = [1 2 3 4 5];
-statevec = 'x,v,k';
+mlist = [0.5 1 2 3 5];
+statevec = 'x,v,d';
 
-m = 0.5;
 sigma = [0.001 0.001];
 f = 100;    %Hz
 initPos = 0;
@@ -20,7 +20,8 @@ timeDiscount = 0.999;
 maxIteration = 300;
 maxTrail = 100;
 for i = 1:5
-    worldlist(i) = initWorld(klist(i),dlist(1), m, sigma, f, initPos, desPoslist(1), Q, R,...
+    
+    worldlist(i) = initWorld(klist(1),dlist(i), mlist(1), sigma, f, initPos, desPoslist(4), Q, R,...
         timeDiscount, maxIteration, maxTrail,statevec);
 end
 

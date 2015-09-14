@@ -1,19 +1,19 @@
 
 
-% PG_MTL
+%% PG_MTL
 
 clearvars -except 'poolobj' 
-load ('STL_k.mat','result');
+load ('STL_m.mat','result');
 clc;
 close all;
 
 
 
-% Initialization
+%% Initialization
 
-if ~exist('poolobj','var')
-    poolobj = parpool;
-end
+% if ~exist('poolobj','var')
+%     poolobj = parpool;
+% end
 profile on;
 %%
 dlist = [0.01,0.05,0.1,0.2,0.5];
@@ -34,7 +34,7 @@ maxIteration = 300;
 maxTrail = 100;
 learningrate = 0.001;
 for i = 1:T
-    worldlist(i) = initWorld(klist(i),dlist(1), mlist(1), sigma, f, initPos, desPoslist(4), Q, R,...
+    worldlist(i) = initWorld(klist(1),dlist(1), mlist(i), sigma, f, initPos, desPoslist(4), Q, R,...
         timeDiscount, maxIteration, maxTrail,statevec);
 end
 
@@ -42,7 +42,7 @@ stateLength = length(strsplit(statevec,','));
 policyK = -1*ones(1,stateLength+1);
 policySigma = 0.3;
 initPolicy = initGaussianPolicy(policyK,policySigma);
-
+display('changing k')
 %% STL for each task
 for t = 1:T
     %policy{t} = singleTask(worldlist(t),initPolicy); 
@@ -50,6 +50,7 @@ for t = 1:T
     %makeAnimation(worldlist(t),vec2policy(policy{t}'));
 end
 
+policy
 W = cell2mat(policy);
 [U,a,b] = svd(W);
 tem = U*sqrt(a);
@@ -57,9 +58,6 @@ L = tem(:,1:k);
 
 S = sqrt(a)*b';
 S = S(1:k,:);
-Z = zeros(2,T);
-Z(1,:) = 1;
-Z(2,:) = desPoslist;
 %S = zeros(k,T);
 %S(1,:) = 1;
 %%
@@ -68,7 +66,7 @@ SL = [reshape(S,[],1);reshape(L,[],1)];
 for i = 1:maxStep
     SLOld = SL;
     for t = 1:T
-        for j = 1:100
+        for j = 1:300
             curPolicy = vec2policy((L*S(:,t))');
             [dJdTheta, trailRewards] = thetaExplore(worldlist(t), curPolicy);
             dJdS = (dJdTheta*L)' - 0.1*2*S(:,t);
@@ -82,7 +80,7 @@ for i = 1:maxStep
     
     i
     
-    for j = 1:100
+    for j = 1:300
         dJdL = zeros(size(L));
         for t = 1:T
             L*S(:,t);
@@ -104,6 +102,8 @@ for i = 1:maxStep
         break;
     end
 end
+
+save('MTL_m.mat')
 
 
 
