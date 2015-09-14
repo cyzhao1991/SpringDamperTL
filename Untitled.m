@@ -30,7 +30,7 @@
 
 %% 2
 clearvars -except 'poolobj' 
-load ('STL_d.mat','result');
+load ('STL_k.mat','result');
 clc;
 close all;
 
@@ -55,11 +55,11 @@ maxTrail = 100;
 learningrate = 0.001;
 
 for i = 1:T
-    worldlist(i) = initWorld(klist(1),dlist(i), mlist(1), sigma, f, initPos, desPoslist(4), Q, R,...
+    worldlist(i) = initWorld(klist(i),dlist(1), mlist(1), sigma, f, initPos, desPoslist(4), Q, R,...
         timeDiscount, maxIteration, maxTrail,statevec);
 end
-MTL_G
-save('GMTL_d.mat')
+MTL_encoder
+save('enMTL_k.mat')
 
 %% 3
 clearvars -except 'poolobj' 
@@ -218,3 +218,69 @@ for i = 1:T
 end
 MTL_G
 save('GMTL_desPos.mat')
+
+%%
+clearvars -except 'poolobj' 
+load ('STL_m.mat','result');
+clc;
+close all;
+
+dlist = [0.01,0.05,0.1,0.2,0.5];
+klist = [1 2 3 4 5];
+mlist = [0.5 1 2 3 5];
+desPoslist = [1 2 3 4 5];
+somelist = dlist;
+
+statevec = 'x,v';
+k = 3;
+T = length(desPoslist);
+
+sigma = [0.001 0.001];
+f = 100;    %Hz
+initPos = 0;
+Q = diag([1,0.05]);
+R = 0*eye(1);
+timeDiscount = 0.999;
+maxIteration = 300;
+maxTrail = 100;
+learningrate = 0.001;
+
+for i = 1:T
+    worldlist(i) = initWorld(klist(1),dlist(1), mlist(i), sigma, f, initPos, desPoslist(4), Q, R,...
+        timeDiscount, maxIteration, maxTrail,statevec);
+end
+MTL_encoder
+save('enMTL_m.mat')
+
+%%
+clearvars -except 'poolobj' 
+load ('STL_desPos.mat','result');
+clc;
+close all;
+
+dlist = [0.01,0.05,0.1,0.2,0.5];
+klist = [1 2 3 4 5];
+mlist = [0.5 1 2 3 5];
+desPoslist = [1 2 3 4 5];
+somelist = dlist;
+
+statevec = 'x,v';
+k = 3;
+T = length(desPoslist);
+
+sigma = [0.001 0.001];
+f = 100;    %Hz
+initPos = 0;
+Q = diag([1,0.05]);
+R = 0*eye(1);
+timeDiscount = 0.999;
+maxIteration = 300;
+maxTrail = 100;
+learningrate = 0.001;
+
+for i = 1:T
+    worldlist(i) = initWorld(klist(1),dlist(1), mlist(1), sigma, f, initPos, desPoslist(i), Q, R,...
+        timeDiscount, maxIteration, maxTrail,statevec);
+end
+MTL_encoder
+save('enMTL_desPos.mat')
